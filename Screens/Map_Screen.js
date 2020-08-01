@@ -1,112 +1,91 @@
+/*This is an Example of React Native Map*/
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  Alert,
-  ScrollView,
-  FlatList,
-} from 'react-native';
-import { AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View , TextInput, Button, TouchableOpacity} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 
-export default class Map_Screen extends Component{
-
-  constructor(props) {
-    super(props);
-    
-
-    this.state = {
-      calls: [
-        {id:1,  name: "Mark Doe",    status:"active", image:"https://bootdey.com/img/Content/avatar/avatar7.png"} ,
-        {id:2,  name: "Clark Man",   status:"active", image:"https://bootdey.com/img/Content/avatar/avatar6.png"} ,
-        {id:3,  name: "Jaden Boor",  status:"active", image:"https://bootdey.com/img/Content/avatar/avatar5.png"} ,
-        {id:4,  name: "Srick Tree",  status:"active", image:"https://bootdey.com/img/Content/avatar/avatar4.png"} ,
-        {id:5,  name: "Erick Doe",   status:"active", image:"https://bootdey.com/img/Content/avatar/avatar3.png"} ,
-        {id:6,  name: "Francis Doe", status:"active", image:"https://bootdey.com/img/Content/avatar/avatar2.png"} ,
-        {id:8,  name: "Matilde Doe", status:"active", image:"https://bootdey.com/img/Content/avatar/avatar1.png"} ,
-        {id:9,  name: "John Doe",    status:"active", image:"https://bootdey.com/img/Content/avatar/avatar4.png"} ,
-        {id:10, name: "Fermod Doe",  status:"active", image:"https://bootdey.com/img/Content/avatar/avatar7.png"} ,
-        {id:11, name: "Danny Doe",   status:"active", image:"https://bootdey.com/img/Content/avatar/avatar1.png"} ,
-      ]
-    };
-  }
-
+import KButtonPink from '../Components/KButtonPink';
  
+export default class Map_Screen extends Component {
 
-  renderItem = ({item}) => {
-    return (
-      <TouchableOpacity>
-        <View style={styles.row}>
-          <Image source={{ uri: item.image }} style={styles.pic} />
-          <View>
-            <View style={styles.nameContainer}>
-              <Text style={styles.nameTxt} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-              <Text style={styles.mblTxt}>Mobile</Text>
-            </View>
-            <View style={styles.msgContainer}>
-              <Text style={styles.msgTxt}>{item.status}</Text>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+  onRegionChange(region) {
+    this.setState({ region });
   }
+  onNewLocation_Click(){
+
+  }
+  onPlace_Click(){
+
+  }
+  onCancel_Click(){
+
+  }
+  onMarkerDragFinished(){
+
+  }
+
 
   render() {
-    return(
-      <View style={{ flex: 1 }} >
-        <FlatList 
-          data={this.state.calls}
-          keyExtractor = {(item) => {
-            return item.id;
+    var mapStyle=[{"elementType": "geometry", "stylers": [{"color": "#242f3e"}]},{"elementType": "labels.text.fill","stylers": [{"color": "#746855"}]},{"elementType": "labels.text.stroke","stylers": [{"color": "#242f3e"}]},{"featureType": "administrative.locality","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi.park","elementType": "geometry","stylers": [{"color": "#263c3f"}]},{"featureType": "poi.park","elementType": "labels.text.fill","stylers": [{"color": "#6b9a76"}]},{"featureType": "road","elementType": "geometry","stylers": [{"color": "#38414e"}]},{"featureType": "road","elementType": "geometry.stroke","stylers": [{"color": "#212a37"}]},{"featureType": "road","elementType": "labels.text.fill","stylers": [{"color": "#9ca5b3"}]},{"featureType": "road.highway","elementType": "geometry","stylers": [{"color": "#746855"}]},{"featureType": "road.highway","elementType": "geometry.stroke","stylers": [{"color": "#1f2835"}]},{"featureType": "road.highway","elementType": "labels.text.fill","stylers": [{"color": "#f3d19c"}]},{"featureType": "transit","elementType": "geometry","stylers": [{"color": "#2f3948"}]},{"featureType": "transit.station","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "water","elementType": "geometry","stylers": [{"color": "#17263c"}]},{"featureType": "water","elementType": "labels.text.fill","stylers": [{"color": "#515c6d"}]},{"featureType": "water","elementType": "labels.text.stroke","stylers": [{"color": "#17263c"}]}];
+    return (
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.922,
+            longitudeDelta: 0.0421,
           }}
-          renderItem={this.renderItem}/>
+          customMapStyle={mapStyle}
+        >
+
+
+          <Marker
+            draggable
+            coordinate={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+            }}
+            onDragEnd={(e) => alert(JSON.stringify(e.nativeEvent.coordinate))}
+            title={'Test Marker'}
+            description={'This is a description of the marker'}
+          />
+
+
+
+        </MapView>
+        <View
+            style={{
+                flexDirection : 'row',
+                position: 'absolute',//use absolute position to show button on top of the map
+                top: '90%', //for center align
+                alignSelf: 'center' //for align to right
+            }}
+        >
+            <KButtonPink title = "Place"/>
+            <KButtonPink title = "Cancel"/>
+        </View>
       </View>
     );
   }
 }
-
+ 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
+  container: {
+    position:'absolute',
+    top:0,
+    left:0,
+    right:0,
+    bottom:0,
     alignItems: 'center',
-    borderColor: '#DCDCDC',
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    padding: 10,
+    justifyContent: 'flex-end',
+    flex: 1,
   },
-  pic: {
-    borderRadius: 30,
-    width: 60,
-    height: 60,
+  map: {
+    position:'absolute',
+    top:0,
+    left:0,
+    right:0,
+    bottom:0,
   },
-  nameContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 280,
-  },
-  nameTxt: {
-    marginLeft: 15,
-    fontWeight: '600',
-    color: '#222',
-    fontSize: 18,
-    width:170,
-  },
-  mblTxt: {
-    fontWeight: '200',
-    color: '#777',
-    fontSize: 13,
-  },
-  msgContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  msgTxt: {
-    fontWeight: '400',
-    color: '#008B8B',
-    fontSize: 12,
-    marginLeft: 15,
-  },
-}); 
+});

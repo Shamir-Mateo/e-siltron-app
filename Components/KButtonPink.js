@@ -7,7 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-export default class KButton extends Component {
+export default class KButtonPink extends Component {
 
     onClick = () => {
         if (this.props.callback) {
@@ -40,9 +40,11 @@ const styles = StyleSheet.create({
   },
 
   loginScreenButton:{
-    marginRight:40,
-    marginLeft:40,
+    marginRight:20,
+    marginLeft:20,
     marginTop:10,
+    paddingLeft: 20,
+    paddingRight: 20,
     backgroundColor:'crimson',
     borderRadius:30,
     borderWidth: 2,

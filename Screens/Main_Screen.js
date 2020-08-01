@@ -7,7 +7,7 @@ import {  Header,  LearnMoreLinks,  Colors,  DebugInstructions,  ReloadInstructi
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 //--------------------  Custom  ---------------------------
 import KTextInput from '../Components/KTextInput';
-import KButton from '../Components/KButton';
+import KMainButton from '../Components/KMainButton';
 export default class Main_Screen extends Component {
   onLogIn = () => {
     console.log(" Log In Clicked ");
@@ -25,7 +25,6 @@ export default class Main_Screen extends Component {
     return (
       
       <LinearGradient colors={['#ff1b50', '#aa0027']} style={styles.linearGradient}>
-        {/* <Image source={require('../assets/images/logo.png')} />   */}
         <ScrollView style={styles.container}>
           <StatusBar hidden={true} />  
           <View style = {{alignItems : 'center', marginTop: '10%'}}  >
@@ -39,9 +38,9 @@ export default class Main_Screen extends Component {
           {/* <View style = {{height: '20%'}}></View>           */}
 
           <View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '80%', alignSelf: 'center'}}>
-            <KButton title = "Log In" callback = {this.onLogIn} />
-            <KButton title = "Sign In" callback = {this.onSignIn} />       
-            <KButton title = "Exit" callback = {this.onExit} />         
+            <KMainButton title = "Log In" callback = {this.onLogIn} />
+            <KMainButton title = "Sign In" callback = {this.onSignIn} />       
+            <KMainButton title = "Exit" callback = {this.onExit} />         
           </View>
 
           
