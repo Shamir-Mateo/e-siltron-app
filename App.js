@@ -26,6 +26,7 @@ function MapScreen({navigation}){
 }
 
 function App() {
+  
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="xMapScreen"  screenOptions={{headerShown: false}} >
