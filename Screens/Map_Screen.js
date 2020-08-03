@@ -14,7 +14,7 @@ let AddToFirebase = item => {
   itemsRef.push({
     latitude : item.latitude,
     longitude : item.longitude,
-    ttl : 100
+    ttl : 60
   });
 };
 /*
@@ -46,7 +46,7 @@ function Map_Screen() {
 
   useEffect(() => {
     const onValueChange = itemsRef.on('value', snapshot => {
-      console.log(cnt++);
+      //console.log(cnt++);
 
       let lastLength = markerArray.length;
       markerArray = [];
@@ -55,7 +55,7 @@ function Map_Screen() {
         var childData = childSnapshot.val();
         markerArray[markerArray.length] = { "latitude" : childData.latitude, "longitude": childData.longitude, "ttl" : childData.ttl};
       });
-      console.log(markerArray);
+      //console.log(markerArray);
 
       if(lastLength != markerArray.length)
         setForceUpdate(forceUpdate + 1);
@@ -83,7 +83,7 @@ function Map_Screen() {
 
     setIsMarking(0);
     AddToFirebase(tempMarkerPosition);
-    Alert.alert("Successfully Added!");
+    //Alert.alert("Successfully Added!");
   }
   const onCancelMarker_Click = () => {
     console.log("Cancel Clicked");

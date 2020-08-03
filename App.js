@@ -14,18 +14,12 @@ import Map_Screen from './Screens/Map_Screen';
 import Main_Screen from './Screens/Main_Screen';
 const Stack = createStackNavigator();
 
-function MainScreen({navigation}){
-  return(
-      <Main_Screen/>
-  );
-}
-
 function App() {
   
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="xMapScreen"  screenOptions={{headerShown: false}} >
-        <Stack.Screen name="xMainScreen" component={MainScreen} />
+      <Stack.Navigator initialRouteName="xMainScreen"  screenOptions={{headerShown: false}} >
+        <Stack.Screen name="xMainScreen" component={Main_Screen} />
         <Stack.Screen name="xMapScreen" component={Map_Screen} /> 
       </Stack.Navigator>
     </NavigationContainer>
