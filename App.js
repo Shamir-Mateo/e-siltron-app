@@ -19,11 +19,6 @@ function MainScreen({navigation}){
       <Main_Screen/>
   );
 }
-function MapScreen({navigation}){
-  return(
-      <Map_Screen/>
-  );
-}
 
 function App() {
   
@@ -31,7 +26,7 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="xMapScreen"  screenOptions={{headerShown: false}} >
         <Stack.Screen name="xMainScreen" component={MainScreen} />
-        <Stack.Screen name="xMapScreen" component={MapScreen} /> 
+        <Stack.Screen name="xMapScreen" component={Map_Screen} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

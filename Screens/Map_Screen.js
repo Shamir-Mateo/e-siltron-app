@@ -1,61 +1,101 @@
 /*This is an Example of React Native Map*/
-import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, StatusBar } from 'react-native';
+import React, { Component, useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 import KButtonPink from '../Components/KButtonPink';
+// import Firebase from '@react-native-firebase/app';
+import {firebaseDB} from '../src/config';
 
 var body;
 var tempMarkerPosition;
-export default class Map_Screen extends Component {
+var itemsRef = firebaseDB.ref('/items');
+let AddToFirebase = item => {
+  itemsRef.push({
+    latitude : item.latitude,
+    longitude : item.longitude,
+    ttl : 100
+  });
+};
+/*
+itemsRef.on('value', snapshot => {
+  snapshot.forEach(function(childSnapshot) {
+    var key = childSnapshot.key;
+    var childData = childSnapshot.val();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isMarking: 0,
-      markerArray: [{ "latitude": 1, "longitude": 1 }],
-      region: {
-        latitude: 53.41058,
-        longitude: -2.97794,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0,
-      }
+    console.log(childData);
+  });
+
+});
+*/
+
+var cnt = 0;
+var markerArray = [{ "latitude": 1, "longitude": 1 }];
+function Map_Screen() {
+
+  const [isMarking, setIsMarking] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
+  // const [markerArray, setMarkerArray] = useState([{ "latitude": 1, "longitude": 1 }]);
+  const [region, setRegion] = useState({
+    latitude: 53.41058,
+    longitude: -2.97794,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0,
+  });
+
+
+  useEffect(() => {
+    const onValueChange = itemsRef.on('value', snapshot => {
+      console.log(cnt++);
+
+      let lastLength = markerArray.length;
+      markerArray = [];
+      snapshot.forEach(function(childSnapshot) {
+        var key = childSnapshot.key;
+        var childData = childSnapshot.val();
+        markerArray[markerArray.length] = { "latitude" : childData.latitude, "longitude": childData.longitude, "ttl" : childData.ttl};
+      });
+      console.log(markerArray);
+
+      if(lastLength != markerArray.length)
+        setForceUpdate(forceUpdate + 1);
+      
+    });
+
+    // Stop listening for updates when no longer required
+    return () => { itemsRef.off('value', onValueChange); }
+    return () => {}
+  });
+  
+  const onRegionChange = (region) => {
+    if(isMarking == 0){
+      setRegion(region);
     }
   }
-
-  onRegionChange = (region) => {
-    if(this.state.isMarking == 0){
-      this.setState({region});
-      console.log(region);
-    }
-  }
-  onAddMarker_Click = () => {
+  const onAddMarker_Click = () => {
     console.log("Add Marker Clicked");
-    this.setState({ isMarking: 1 });
-    tempMarkerPosition = { "latitude" : this.state.region.latitude, "longitude": this.state.region.longitude};
-
-    console.log(tempMarkerPosition);
+    setIsMarking(1);
+    tempMarkerPosition = { "latitude" : region.latitude, "longitude": region.longitude};    
   }
-  onPlaceMarker_Click = () => {
-    //  here have to push on google firebase store
-    
-    this.setState({markerArray: [...this.state.markerArray, tempMarkerPosition]});
-    console.log(this.state.markerArray);
-    this.setState({ isMarking: 0 });
+  const onPlaceMarker_Click = () => {
+    ///////////////////////////////this.setState({markerArray: [...markerArray, tempMarkerPosition]});
+    //setMarkerArray([...markerArray, tempMarkerPosition]);
 
+    setIsMarking(0);
+    AddToFirebase(tempMarkerPosition);
+    Alert.alert("Successfully Added!");
   }
-  onCancelMarker_Click = () => {
+  const onCancelMarker_Click = () => {
     console.log("Cancel Clicked");
-    this.setState({ isMarking: 0 });
+    setIsMarking(0);
   }
-  onMarkerDragFinished(markerPosition) {
+  const onMarkerDragFinished = (markerPosition) => {
     tempMarkerPosition = markerPosition;
   }
 
-  render() {
-    var mapStyle = [{ "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] }, { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] }, { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] }, { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#263c3f" }] }, { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#6b9a76" }] }, { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] }, { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca5b3" }] }, { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#746855" }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#1f2835" }] }, { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#f3d19c" }] }, { "featureType": "transit", "elementType": "geometry", "stylers": [{ "color": "#2f3948" }] }, { "featureType": "transit.station", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }, { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#515c6d" }] }, { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }];
-    return (
-      <View style={styles.container}>
+  var mapStyle = [{ "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] }, { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] }, { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] }, { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#263c3f" }] }, { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#6b9a76" }] }, { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] }, { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca5b3" }] }, { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#746855" }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#1f2835" }] }, { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#f3d19c" }] }, { "featureType": "transit", "elementType": "geometry", "stylers": [{ "color": "#2f3948" }] }, { "featureType": "transit.station", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }, { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#515c6d" }] }, { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }];
+  return (
+    <View style={styles.container}>
         <StatusBar hidden={true} />  
         <MapView
           style={styles.map}
@@ -66,19 +106,19 @@ export default class Map_Screen extends Component {
             longitudeDelta: 0.0421,
           }}
           customMapStyle={mapStyle}
-          onRegionChangeComplete ={region => { this.onRegionChange(region); }}
+          onRegionChangeComplete ={region => { onRegionChange(region); }}
         >
 
         {
-          this.state.markerArray.map((item, key) => {
+          markerArray.map((item, key) => {
             return(
               <Marker
                 coordinate={{
                   latitude: item.latitude,
                   longitude: item.longitude,
                 }}
-                title={'John Smith'}
-                description={'8/1/2020 07:32 AM'}
+                //title={parseFloat(item.ttl)}
+                // description={'8/1/2020 07:32 AM'}
                 key = {key}
               />
             );
@@ -86,14 +126,14 @@ export default class Map_Screen extends Component {
         }
 
         {
-          this.state.isMarking ? (
+          isMarking ? (
             <Marker
               draggable
               coordinate={{
-                latitude: this.state.region.latitude,
-                longitude: this.state.region.longitude,
+                latitude: region.latitude,
+                longitude: region.longitude,
               }}
-              onDragEnd={(e) => this.onMarkerDragFinished(e.nativeEvent.coordinate)}
+              onDragEnd={(e) => onMarkerDragFinished(e.nativeEvent.coordinate)}
               title={'Your Marker'}
               description={'Drag this to set location'}
               pinColor = {'#0000ff'}
@@ -109,15 +149,16 @@ export default class Map_Screen extends Component {
             alignSelf: 'center' //for align to right
           }}
         >
-          {!this.state.isMarking ? (<KButtonPink title="Add New" callback={this.onAddMarker_Click} />) : null}
-          {this.state.isMarking ? (<KButtonPink title="Place" callback={this.onPlaceMarker_Click} />) : null}
-          {this.state.isMarking ? (<KButtonPink title="Cancel" callback={this.onCancelMarker_Click} />) : null}
+          {!isMarking ? (<KButtonPink title="Add New" callback={onAddMarker_Click} />) : null}
+          {isMarking ? (<KButtonPink title="Place" callback={onPlaceMarker_Click} />) : null}
+          {isMarking ? (<KButtonPink title="Cancel" callback={onCancelMarker_Click} />) : null}
 
         </View>
       </View>
-    );
-  }
+  )
 }
+export default Map_Screen;
+
 
 const styles = StyleSheet.create({
   container: {
