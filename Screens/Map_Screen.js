@@ -53,7 +53,8 @@ function Map_Screen() {
       snapshot.forEach(function(childSnapshot) {
         var key = childSnapshot.key;
         var childData = childSnapshot.val();
-        markerArray[markerArray.length] = { "latitude" : childData.latitude, "longitude": childData.longitude, "ttl" : childData.ttl};
+        if(childData.ttl < 100000)
+          markerArray[markerArray.length] = { "latitude" : childData.latitude, "longitude": childData.longitude, "ttl" : childData.ttl};
       });
       //console.log(markerArray);
 
