@@ -11,8 +11,9 @@ export default class KTextInput extends Component {
   render() {
     return (
         <TextInput
-            placeholder = {this.props.placeHolder}
+            placeholder = {this.props.placeholder}
             style={styles.textInput}
+            onChangeText={this.props.onChangeText}
             // onChangeText={idValue => onChangeIdValue(idValue)}
             // value={idValue}
         />
@@ -29,18 +30,26 @@ const styles = StyleSheet.create({
   },
   
   textInput: {
-    height: 40, 
+    height: 45, 
+    width: '100%',
+    alignSelf : 'center',
+    textAlign : 'center',
+    
+    color: "#880000",
     fontSize: 18,
     fontWeight: "normal",
-    color: "black",
-    paddingBottom:4,
-    borderColor: 'rgb(252, 133, 106)', 
-    borderRadius: 10 , 
+    fontStyle: 'normal',
+    
+    borderColor: '#880000', 
+    borderRadius: 15 , 
+    borderWidth: 3 ,
+    
     paddingLeft : 20, 
     paddingRight : 20, 
-    borderWidth: 0 ,
-    borderBottomWidth: 2, 
-    fontStyle: 'normal',
-    backgroundColor : 'rgba(255, 255, 255, 0.4)',
+    paddingBottom:4,
+    
+    margin: 5,
+
+    backgroundColor : 'rgba(255, 255, 255, 0.8)',
   },
 });
