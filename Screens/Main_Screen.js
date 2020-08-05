@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
-import {  SafeAreaView,  StyleSheet,  ScrollView,  View,  Text,  TextInput,  Image,  StatusBar,  Button} from 'react-native';
+import {  SafeAreaView,  StyleSheet,  ScrollView,  View,  Text,  TextInput,  Image,  StatusBar,  Button, BackHandler} from 'react-native';
 import {  Header,  LearnMoreLinks,  Colors,  DebugInstructions,  ReloadInstructions,} from 'react-native/Libraries/NewAppScreen';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -20,6 +20,7 @@ function Main_Screen({navigation}){
 
   const onExit = () => {
     console.log(" Exit Clicked ");
+    BackHandler.exitApp();
   }
 
   return ( 
@@ -40,7 +41,7 @@ function Main_Screen({navigation}){
           <KMainButton title = "Log In" callback = {onLogIn} />
           <KMainButton title = "Sign In" callback = {onSignIn} />       
           <KMainButton title = "Exit" callback = {onExit} />
-          <Text style = {{ color : "#FFF", padding : 20 , alignSelf : 'center' }}>my email = danevhome01@gmail.com</Text>         
+          {/* <Text style = {{ color : "#FFF", padding : 20 , alignSelf : 'center' }}>my email = danevhome01@gmail.com</Text>          */}
         </View>    
         
         <View></View>

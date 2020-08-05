@@ -1,50 +1,50 @@
 /*This is an Example of React Native Map*/
 import React, { Component, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, StatusBar, Alert, Dimensions, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-
+import Geolocation from '@react-native-community/geolocation';
 import KButtonPink from '../Components/KButtonPink';
+import KShapeCircle from '../Components/KShapeCircle';
 // import Firebase from '@react-native-firebase/app';
 import {firebaseDB} from '../src/config';
 
-var body;
 var tempMarkerPosition;
 var itemsRef = firebaseDB.ref('/items');
+var cnt = 0;
+var markerArray = [{ "latitude": 1, "longitude": 1 }];
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
 let AddToFirebase = item => {
   itemsRef.push({
     latitude : item.latitude,
     longitude : item.longitude,
-    ttl : 60
+    ttl : 1800
   });
 };
-/*
-itemsRef.on('value', snapshot => {
-  snapshot.forEach(function(childSnapshot) {
-    var key = childSnapshot.key;
-    var childData = childSnapshot.val();
 
-    console.log(childData);
-  });
+function Map_Screen({navigation}) {
 
-});
-*/
-
-var cnt = 0;
-var markerArray = [{ "latitude": 1, "longitude": 1 }];
-function Map_Screen() {
-
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [regionInitialized , setRegionInitialized] = useState(false);
   const [isMarking, setIsMarking] = useState(0);
   const [forceUpdate, setForceUpdate] = useState(0);
   // const [markerArray, setMarkerArray] = useState([{ "latitude": 1, "longitude": 1 }]);
-  const [region, setRegion] = useState({
-    latitude: 53.41058,
-    longitude: -2.97794,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0,
-  });
-
-
+  const [region, setRegion] = useState({ latitude: 0, longitude: 0,  latitudeDelta: 0, longitudeDelta: 0 });
   useEffect(() => {
+    if(isLoaded == false){
+      setIsLoaded(true);
+
+      Geolocation.getCurrentPosition((position) => {
+        setRegion({
+          latitude : position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta : 0.012 ,
+          longitudeDelta : 0.012 * (screenWidth / screenHeight),
+        });
+      })
+    }
+
     const onValueChange = itemsRef.on('value', snapshot => {
       //console.log(cnt++);
 
@@ -56,14 +56,12 @@ function Map_Screen() {
         if(childData.ttl < 100000)
           markerArray[markerArray.length] = { "latitude" : childData.latitude, "longitude": childData.longitude, "ttl" : childData.ttl};
       });
-      //console.log(markerArray);
 
       if(lastLength != markerArray.length)
         setForceUpdate(forceUpdate + 1);
       
     });
 
-    // Stop listening for updates when no longer required
     return () => { itemsRef.off('value', onValueChange); }
     return () => {}
   });
@@ -72,19 +70,18 @@ function Map_Screen() {
     if(isMarking == 0){
       setRegion(region);
     }
+    if(region.latitude != 0)
+      setRegionInitialized(true);
+    console.log(region);
   }
   const onAddMarker_Click = () => {
     console.log("Add Marker Clicked");
     setIsMarking(1);
     tempMarkerPosition = { "latitude" : region.latitude, "longitude": region.longitude};    
   }
-  const onPlaceMarker_Click = () => {
-    ///////////////////////////////this.setState({markerArray: [...markerArray, tempMarkerPosition]});
-    //setMarkerArray([...markerArray, tempMarkerPosition]);
-
+  const onReport_Click = () => {
     setIsMarking(0);
     AddToFirebase(tempMarkerPosition);
-    //Alert.alert("Successfully Added!");
   }
   const onCancelMarker_Click = () => {
     console.log("Cancel Clicked");
@@ -94,18 +91,20 @@ function Map_Screen() {
     tempMarkerPosition = markerPosition;
   }
 
-  var mapStyle = [{ "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] }, { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] }, { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] }, { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#263c3f" }] }, { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#6b9a76" }] }, { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] }, { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] }, { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca5b3" }] }, { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#746855" }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#1f2835" }] }, { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#f3d19c" }] }, { "featureType": "transit", "elementType": "geometry", "stylers": [{ "color": "#2f3948" }] }, { "featureType": "transit.station", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] }, { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }, { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#515c6d" }] }, { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }];
+  var mapStyle = [
+    { "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] },     { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] },     { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] },     { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] },     { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] },     { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#263c3f" }] },     { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#6b9a76" }] },     { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] },     { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] },     { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca5b3" }] },     { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#746855" }] },     { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#1f2835" }] },     { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#f3d19c" }] },     { "featureType": "transit", "elementType": "geometry", "stylers": [{ "color": "#2f3948" }] },     { "featureType": "transit.station", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] },     { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] },     { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#515c6d" }] },     { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }];
   return (
     <View style={styles.container}>
         <StatusBar hidden={true} />  
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.922,
-            longitudeDelta: 0.0421,
+          initialRegion = {{
+            latitude : 0,
+            longitude : 0,
+            latitudeDelta : 0,
+            longitudeDelta : 0,
           }}
+          region = { regionInitialized ? null : region}
           customMapStyle={mapStyle}
           onRegionChangeComplete ={region => { onRegionChange(region); }}
         >
@@ -118,10 +117,12 @@ function Map_Screen() {
                   latitude: item.latitude,
                   longitude: item.longitude,
                 }}
-                //title={parseFloat(item.ttl)}
-                // description={'8/1/2020 07:32 AM'}
-                key = {key}
-              />
+                key = {key}>
+                  {/* <Image
+                    source={require('../assets/images/marker_small_red.png')}
+                    style={{width: 30, height: 30}}
+                  /> */}
+              </Marker>
             );
           })
         }
@@ -137,8 +138,13 @@ function Map_Screen() {
               onDragEnd={(e) => onMarkerDragFinished(e.nativeEvent.coordinate)}
               title={'Your Marker'}
               description={'Drag this to set location'}
-              pinColor = {'#0000ff'}
-            />) : null
+              pinColor = {'#0000ff'}>
+                {/* <Image
+                  source={require('../assets/images/marker_small_blue.png')}
+                  style={{width: 30, height: 30}}
+                /> */}
+            </Marker>
+            ) : null
         }
 
         </MapView>
@@ -151,7 +157,7 @@ function Map_Screen() {
           }}
         >
           {!isMarking ? (<KButtonPink title="Add New" callback={onAddMarker_Click} />) : null}
-          {isMarking ? (<KButtonPink title="Place" callback={onPlaceMarker_Click} />) : null}
+          {isMarking ? (<KButtonPink title="Report" callback={onReport_Click} />) : null}
           {isMarking ? (<KButtonPink title="Cancel" callback={onCancelMarker_Click} />) : null}
 
         </View>
