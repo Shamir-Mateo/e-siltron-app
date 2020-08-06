@@ -21,6 +21,7 @@ function Main_Screen({navigation}){
   const onSignIn = () => {
     console.log(email);
     console.log(password);
+
     if(email == ""){
       Toast.show('Please input email');
     }else if(password == ""){
@@ -34,7 +35,7 @@ function Main_Screen({navigation}){
       .catch(error => {
         Toast.show(error.code);
       });
-    }    
+    }
   }
 
   const onSignUp = () => {
@@ -97,8 +98,8 @@ function Main_Screen({navigation}){
         {/* <View style = {{height: '20%'}}></View>           */}
 
         { SignInVisible ?
-        (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '60%', alignSelf: 'center', marginTop : '10%'}}>
-          <KTextInput placeholder = "User Email" onChangeText = {email => setEmail(email)} />
+        (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '80%', alignSelf: 'center', marginTop : '10%'}}>
+          <KTextInput placeholder = "User Email"  onChangeText = {email => setEmail(email.replace(/\s/g, ''))} />
           <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password)} />
 
           <View style = {{flexDirection : 'row',justifyContent: 'center', alignSelf: 'center', width: '80%', marginTop : '10%'}}>
@@ -109,8 +110,8 @@ function Main_Screen({navigation}){
 
         
         { SignUpVisible ?
-        (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '60%', alignSelf: 'center', marginTop : '10%'}}>
-          <KTextInput placeholder = "User Email" onChangeText = {email => setEmail(email)} />
+        (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '80%', alignSelf: 'center', marginTop : '10%'}}>
+          <KTextInput placeholder = "User Email" onChangeText = {email => setEmail(email.replace(/\s/g, ''))} />
           <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password)} />
 
           <View style = {{flexDirection : 'row',justifyContent: 'center', alignSelf: 'center', width: '80%', marginTop : '10%'}}>
