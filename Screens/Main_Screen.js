@@ -100,7 +100,7 @@ function Main_Screen({navigation}){
         { SignInVisible ?
         (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '80%', alignSelf: 'center', marginTop : '10%'}}>
           <KTextInput placeholder = "User Email"  onChangeText = {email => setEmail(email.replace(/\s/g, ''))} />
-          <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password)} />
+          <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password.replace(/\s/g, ''))} />
 
           <View style = {{flexDirection : 'row',justifyContent: 'center', alignSelf: 'center', width: '80%', marginTop : '10%'}}>
             <KMainButton title = "     Back     " callback = {close_SignIn_Modal}/>
@@ -112,7 +112,7 @@ function Main_Screen({navigation}){
         { SignUpVisible ?
         (<View style = {{flexDirection : 'column', justifyContent: 'center', marginTop: 20,  width : '80%', alignSelf: 'center', marginTop : '10%'}}>
           <KTextInput placeholder = "User Email" onChangeText = {email => setEmail(email.replace(/\s/g, ''))} />
-          <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password)} />
+          <KTextInput placeholder = "User Password" onChangeText = {password => setPassword(password.replace(/\s/g, ''))} />
 
           <View style = {{flexDirection : 'row',justifyContent: 'center', alignSelf: 'center', width: '80%', marginTop : '10%'}}>
             <KMainButton title = "     Back     " callback = {close_SignUp_Modal}/>
