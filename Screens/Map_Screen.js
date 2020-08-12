@@ -31,17 +31,20 @@ function Map_Screen({navigation}) {
   const [forceUpdate, setForceUpdate] = useState(0);
   // const [markerArray, setMarkerArray] = useState([{ "latitude": 1, "longitude": 1 }]);
   const [region, setRegion] = useState({ latitude: 0, longitude: 0,  latitudeDelta: 0, longitudeDelta: 0 });
+  const [myLocation, setMyLocation] = useState({ latitude: 0, longitude: 0});
   useEffect(() => {
     if(isLoaded == false){
       setIsLoaded(true);
 
       Geolocation.getCurrentPosition((position) => {
-        setRegion({
+        var currentLocation = {
           latitude : position.coords.latitude,
           longitude: position.coords.longitude,
-          latitudeDelta : 0.012 ,
-          longitudeDelta : 0.012 * (screenWidth / screenHeight),
-        });
+          latitudeDelta : 0.003 ,
+          longitudeDelta : 0.003 * (screenWidth / screenHeight),
+        };
+        setRegion(currentLocation);
+        setMyLocation(currentLocation);
       })
     }
 
@@ -79,6 +82,15 @@ function Map_Screen({navigation}) {
     setIsMarking(1);
     tempMarkerPosition = { "latitude" : region.latitude, "longitude": region.longitude};    
   }
+  const onRelocation_Click = () => {
+    setRegion({ 
+      latitude : myLocation.latitude,
+      longitude : myLocation.longitude,
+      latitudeDelta : region.latitudeDelta,
+      longitudeDelta : region.longitudeDelta
+    });
+    setRegionInitialized(false);
+  }
   const onReport_Click = () => {
     setIsMarking(0);
     AddToFirebase(tempMarkerPosition);
@@ -104,10 +116,25 @@ function Map_Screen({navigation}) {
             latitudeDelta : 0,
             longitudeDelta : 0,
           }}
+          mapType = "satellite"
           region = { regionInitialized ? null : region}
           customMapStyle={mapStyle}
           onRegionChangeComplete ={region => { onRegionChange(region); }}
         >
+        
+        {
+          isLoaded ? (
+            <Marker
+              draggable
+              coordinate={{
+                latitude: myLocation.latitude,
+                longitude: myLocation.longitude
+              }}
+              title={'My Location'}
+              pinColor = {'#00ff00'}>
+            </Marker>) : null
+        }
+
 
         {
           markerArray.map((item, key) => {
@@ -157,6 +184,7 @@ function Map_Screen({navigation}) {
           }}
         >
           {!isMarking ? (<KButtonPink title="Add New" callback={onAddMarker_Click} />) : null}
+          {!isMarking ? (<KButtonPink title="Relocation" callback={onRelocation_Click} />) : null}
           {isMarking ? (<KButtonPink title="Report" callback={onReport_Click} />) : null}
           {isMarking ? (<KButtonPink title="Cancel" callback={onCancelMarker_Click} />) : null}
 
